@@ -1,23 +1,45 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Composer } from "@/presentation/components/Composer";
+import { JourneyView } from "@/presentation/components/JourneyView";
+import { useJourney } from "@/presentation/hooks/useJourney";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  component: CompanionPage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function CompanionPage() {
+  const { journey, isSending, sendMessage, clearJourney } = useJourney();
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <div className="mx-auto flex h-screen w-full max-w-2xl flex-col bg-background">
+      <header className="flex items-center justify-between border-b border-border px-4 py-3">
+        <div>
+          <h1 className="text-base font-semibold text-foreground">Companion</h1>
+          <p className="text-xs text-muted-foreground">
+            Seu parceiro de desenvolvimento pessoal
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => void clearJourney()}
+          className="rounded-lg border border-input px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-accent"
+        >
+          Nova jornada
+        </button>
+      </header>
+
+      {journey ? (
+        <JourneyView journey={journey} isSending={isSending} />
+      ) : (
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-sm text-muted-foreground">Carregando sua jornada…</p>
+        </div>
+      )}
+
+      <Composer
+        onSend={sendMessage}
+        disabled={!journey || isSending}
+        focusToken={journey?.id}
       />
     </div>
   );
