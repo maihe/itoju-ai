@@ -77,20 +77,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Companion — Seu parceiro de desenvolvimento pessoal" },
+      { title: "Itoju Companion — Seu parceiro de desenvolvimento pessoal" },
       {
         name: "description",
         content:
           "Companion é um parceiro de longo prazo para desenvolvimento pessoal, baseado em conversas.",
       },
-      { property: "og:title", content: "Companion" },
+      { property: "og:title", content: "Itoju Companion — Seu parceiro de desenvolvimento pessoal" },
       {
         property: "og:description",
         content:
-          "Um parceiro de longo prazo para desenvolvimento pessoal, baseado em conversas.",
+          "Companion é um parceiro de longo prazo para desenvolvimento pessoal, baseado em conversas.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Itoju Companion — Seu parceiro de desenvolvimento pessoal" },
+      { name: "twitter:description", content: "Companion é um parceiro de longo prazo para desenvolvimento pessoal, baseado em conversas." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/0c3c549f-2bcd-4c22-8f77-182360cefad1" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/0c3c549f-2bcd-4c22-8f77-182360cefad1" },
     ],
     links: [
       {
