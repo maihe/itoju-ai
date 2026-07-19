@@ -4,7 +4,7 @@ import { SendChatMessageUseCase } from "@/application/SendChatMessageUseCase";
 import type { AIService } from "@/domain/ports/AIService";
 import type { JourneyRepository } from "@/domain/ports/JourneyRepository";
 import type { UserProfileRepository } from "@/domain/ports/UserProfileRepository";
-import { EchoAIService } from "@/infrastructure/ai/EchoAIService";
+import { PrototypeCompanionAIService } from "@/infrastructure/ai/PrototypeCompanionAIService";
 import { LocalStorageJourneyRepository } from "@/infrastructure/storage/LocalStorageJourneyRepository";
 import { LocalStorageUserProfileRepository } from "@/infrastructure/storage/LocalStorageUserProfileRepository";
 
@@ -32,7 +32,7 @@ let cached: CompanionContainer | null = null;
 export function getContainer(): CompanionContainer {
   if (cached) return cached;
 
-  const ai: AIService = new EchoAIService();
+  const ai: AIService = new PrototypeCompanionAIService();
   const journeyRepository: JourneyRepository = new LocalStorageJourneyRepository();
   const profileRepository: UserProfileRepository = new LocalStorageUserProfileRepository();
 
