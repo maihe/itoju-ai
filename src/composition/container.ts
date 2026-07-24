@@ -42,6 +42,11 @@ export function getContainer(): CompanionContainer {
   const journeyRepository: JourneyRepository = new LocalStorageJourneyRepository();
   const profileRepository: UserProfileRepository = new LocalStorageUserProfileRepository();
   const memoryRepository: MemoryRepository = new LocalStorageMemoryRepository();
+  const contextEngine = new ContextEngine(
+    journeyRepository,
+    memoryRepository,
+    profileRepository,
+  );
 
   cached = {
     ai,
@@ -51,7 +56,11 @@ export function getContainer(): CompanionContainer {
     useCases: {
       loadJourney: new LoadJourneyUseCase(journeyRepository),
       clearJourney: new ClearJourneyUseCase(journeyRepository),
-      sendChatMessage: new SendChatMessageUseCase(ai, journeyRepository),
+      sendChatMessage: new SendChatMessageUseCase(
+        ai,
+        journeyRepository,
+        contextEngine,
+      ),
       loadMemories: new LoadMemoriesUseCase(memoryRepository),
     },
   };
