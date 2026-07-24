@@ -1,23 +1,24 @@
-import type { ChatMessage } from "@/domain/entities/ChatMessage";
 import type {
   ChatMessageEvent,
-  JourneyEvent,
 } from "@/domain/entities/JourneyEvent";
+import type { ChatMessage } from "@/domain/entities/ChatMessage";
 import type { LifeJourney } from "@/domain/entities/LifeJourney";
-import type { UserProfile } from "@/domain/entities/UserProfile";
 import type { AIService } from "@/domain/ports/AIService";
 import type { JourneyRepository } from "@/domain/ports/JourneyRepository";
 import { AppendEventUseCase } from "./AppendEventUseCase";
+import type { ContextEngine } from "./ContextEngine";
 
 /**
  * SendChatMessageUseCase — orquestra o fluxo completo de uma mensagem:
  *
  * 1. Cria o evento de mensagem do usuário e persiste na jornada.
- * 2. Monta o CompanionContext a partir do histórico de chat.
- * 3. Chama o AIService para gerar a resposta.
+ * 2. Delega ao `ContextEngine` a montagem do `CompanionContext` a
+ *    partir dos repositórios (histórico, perfil, memórias, ...).
+ * 3. Chama o `AIService` com o contexto consolidado.
  * 4. Persiste o evento de resposta do companion.
  *
- * Nenhuma dependência concreta: recebe as portas via construtor.
+ * O AIService nunca conversa com repositórios diretamente — recebe o
+ * contexto pronto e permanece puro.
  */
 export class SendChatMessageUseCase {
   private readonly append: AppendEventUseCase;
@@ -25,6 +26,7 @@ export class SendChatMessageUseCase {
   constructor(
     private readonly ai: AIService,
     repo: JourneyRepository,
+    private readonly contextEngine: ContextEngine,
   ) {
     this.append = new AppendEventUseCase(repo);
   }
@@ -32,7 +34,6 @@ export class SendChatMessageUseCase {
   async execute(
     journey: LifeJourney,
     userContent: string,
-    profile?: UserProfile,
   ): Promise<LifeJourney> {
     const userEvent = this.buildChatEvent({
       role: "user",
@@ -40,8 +41,8 @@ export class SendChatMessageUseCase {
     });
     let updated = await this.append.execute(journey, userEvent);
 
-    const history = extractChatHistory(updated.events);
-    const reply = await this.ai.generateResponse({ history, profile });
+    const context = await this.contextEngine.build(updated);
+    const reply = await this.ai.generateResponse(context);
 
     const companionEvent = this.buildChatEvent(reply);
     updated = await this.append.execute(updated, companionEvent);
@@ -57,10 +58,4 @@ export class SendChatMessageUseCase {
       payload: message,
     };
   }
-}
-
-function extractChatHistory(events: JourneyEvent[]): ChatMessage[] {
-  return events
-    .filter((e): e is Extract<JourneyEvent, { type: "chat_message" }> => e.type === "chat_message")
-    .map((e) => e.payload);
 }
