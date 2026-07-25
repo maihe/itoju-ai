@@ -5,6 +5,15 @@ defines a route. Do **not** create `src/pages/`, `src/routes/_app/index.tsx`, or
 `app/layout.tsx` — those are Next.js / Remix conventions. The only root layout
 is `src/routes/__root.tsx`.
 
+## Current routes
+
+| File | URL | Purpose |
+| --- | --- | --- |
+| `index.tsx` | `/` | Journey — the chat with the Companion |
+| `inbox.tsx` | `/inbox` | Quick capture of thoughts, before they're classified |
+| `memories.tsx` | `/memories` | What the Companion knows, grouped by memory type |
+| `__root.tsx` | (wraps all) | App shell — head tags, `QueryClientProvider`, `<Outlet />` |
+
 ## Conventions
 
 | File | URL |
