@@ -5,10 +5,21 @@ Referência conceitual para a futura memória do Companion.
 orientar as Fases 2+ e manter coerência entre design, produto e
 código quando a memória for construída.
 
+Memória aqui é **infraestrutura, não o diferencial do produto** (ver
+`PRODUCT_STRATEGY.md`, "Onde competimos"). Ela existe para que o
+Companion reduza carga cognitiva — nunca para ser exibida como prova
+de que o sistema lembra.
+
 ## Princípio
 
 Memória é confiança. O Companion nunca grava um fato permanente sobre
 a pessoa sem consentimento explícito (ver `CONSTITUTION.md`).
+
+Memória também só vale a pena recuperar quando muda a qualidade da
+resposta atual. Uma memória confirmada não entra automaticamente em
+todo `CompanionContext` futuro — se recuperá-la não muda o que o
+Companion diria, ela permanece invisível. A IA nunca recupera uma
+memória apenas para demonstrar que lembra.
 
 ## Tipos de memória previstos
 
@@ -37,6 +48,8 @@ Toda memória vive em uma máquina de estados:
 
 - Cada memória deve ter proveniência (evento da jornada que a
   originou) para permitir auditoria e explicabilidade.
-- A recuperação de memórias relevantes alimentará o campo
-  `relevantMemories` de `CompanionContext` (ver ADR-003).
+- A recuperação de memórias **relevantes** (não todas as confirmadas)
+  alimentará o campo `relevantMemories` de `CompanionContext` (ver
+  ADR-003) — relevância aqui significa "muda a resposta", não "está
+  confirmada".
 - A criação de uma memória gera um evento `MemoryCreated` na jornada.

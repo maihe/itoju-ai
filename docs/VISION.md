@@ -8,14 +8,29 @@ acompanha a pessoa ao longo dos anos, ajudando-a a ganhar clareza,
 manter continuidade e caminhar em direção a uma vida mais alinhada com
 quem ela quer ser.
 
+O próprio nome — Itọ́ju, cuidado — descreve o que ele faz: cuidar do
+corpo e dos projetos da mente. Na prática, isso significa
+**autorregulação** (manter, com o menor atrito possível, o que é
+imprescindível sustentar) e **construção de identidade** (realizar
+coisas alinhadas com quem a pessoa é, o que ela ama e o que resolve
+seus problemas reais) tanto quanto clareza pontual numa conversa —
+chegar a algum lugar, não só sentir-se melhor por uma hora.
+
 ## Problema que resolve
 
-A maioria das pessoas vive com sobrecarga mental, dispersão de
-objetivos e ausência de continuidade. Ferramentas atuais tratam
-sintomas isolados (tarefas, hábitos, notas) mas ninguém carrega
-contexto real de vida no tempo.
+O problema raiz é sobrecarga cognitiva: a maioria das pessoas carrega
+mentalmente mais contexto, decisões pendentes e objetivos dispersos do
+que consegue processar. Ferramentas atuais tratam sintomas isolados
+(tarefas, hábitos, notas) e, na prática, aumentam esse peso — mais um
+lugar para checar, mais um sistema para manter.
 
-O Companion existe para ser essa continuidade.
+Memória e continuidade não são o problema em si — são mecanismos para
+atacá-lo. Sem continuidade, a pessoa reexplica um contexto que já está
+na cabeça dela; sem memória, o Companion perde o que deveria estar
+guardado. Nenhum dos dois é o objetivo do produto.
+
+**O Companion não compete por lembrar mais informações. Compete por
+reduzir melhor a carga cognitiva da pessoa.**
 
 ## Hipótese principal do MVP
 
