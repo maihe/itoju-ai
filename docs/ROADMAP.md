@@ -20,7 +20,9 @@ sobre a anterior; nenhuma pula etapas.
 
 ## Fase 3 — Continuidade
 
-- Retomada consciente entre sessões ("da última vez você disse...").
+- Retomada consciente entre sessões — a conversa continua de onde
+  parou, sem pedir para a pessoa repetir contexto e sem citar o que
+  foi dito apenas para provar que foi lembrado.
 - Detecção de padrões ao longo do tempo.
 - Check-ins leves.
 

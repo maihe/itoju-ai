@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 /**
  * Navegação principal do Companion. Mantida propositalmente mínima
- * (Jornada / Memórias) nesta fase.
+ * (Jornada / Inbox / Memórias) nesta fase.
  */
 export function CompanionNav() {
   const linkClass =
@@ -18,6 +18,13 @@ export function CompanionNav() {
         inactiveProps={{ className: linkClass }}
       >
         Jornada
+      </Link>
+      <Link
+        to="/inbox"
+        activeProps={{ className: `${linkClass} ${activeClass}` }}
+        inactiveProps={{ className: linkClass }}
+      >
+        Inbox
       </Link>
       <Link
         to="/memories"

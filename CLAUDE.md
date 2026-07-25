@@ -8,14 +8,20 @@ Itoju Companion — a long-term personal-development companion app (not a
 task chatbot). Product intent, principles, and roadmap live in `docs/`
 and should be read before any feature or copy change:
 
+- `docs/PRODUCT_STRATEGY.md` — the product's competitive positioning
+  (reduce cognitive load, not maximize remembered information), the
+  current MVP question, biggest risk, success signals, and build
+  order.
 - `docs/VISION.md` — purpose and the MVP's single success criterion.
 - `docs/CONSTITUTION.md` — non-negotiable behavioral principles (never
   induce guilt, always explain recommendations, ask before saving a
-  permanent memory, celebrate achievements, preserve autonomy). Any
-  change to response generation, memory handling, or Companion copy
-  must respect these.
+  permanent memory, celebrate achievements, preserve autonomy, reduce
+  cognitive load over accumulating information). Any change to
+  response generation, memory handling, or Companion copy must respect
+  these.
 - `docs/MEMORY_MODEL.md` — the memory model planned for Phase 2+ (not
-  yet implemented — see Roadmap).
+  yet implemented — see Roadmap). Memory is infrastructure, not the
+  product's differentiator.
 - `docs/ROADMAP.md` — the 6 planned phases; the codebase is currently
   entirely in Phase 1 (Conversation).
 - `docs/ARCHITECTURE_DECISIONS.md` — ADRs explaining *why* the layering
@@ -75,13 +81,17 @@ and presentation code should never need to change for that.
   `LoadMemoriesUseCase`) and `ContextEngine`, the *only* place allowed
   to read from repositories to assemble a `CompanionContext`. An
   `AIService` implementation must never talk to repositories directly.
-- **`src/infrastructure`** — concrete adapters: `PrototypeCompanionAIService`
-  (a rule-based `AIService` stub, not a real LLM — see ADR-005) built
-  from a `ResponseStrategy` list evaluated in priority order
-  (`infrastructure/ai/prototype/strategies/`, most specific first,
-  `DefaultStrategy` last as fallback); and three `LocalStorage*Repository`
+- **`src/infrastructure`** — concrete adapters: `OpenRouterCompanionAIService`
+  (real `AIService` implementation — calls OpenRouter, a model-agnostic
+  gateway, instead of a provider-specific SDK; see ADR-006) via a
+  TanStack Start server function (`openRouterServerFn.ts`) so the API
+  key never reaches the client; and three `LocalStorage*Repository`
   classes (journey, memory, profile), each SSR-guarded
-  (`typeof window === "undefined"` short-circuits to no-op).
+  (`typeof window === "undefined"` short-circuits to no-op). Model
+  selection is a `ModelConfiguration` read from server-only env vars
+  (`OPENROUTER_API_KEY`, `AI_MODEL`, `AI_TEMPERATURE`, `AI_MAX_TOKENS`,
+  `AI_TIMEOUT_MS` — see `.env.example`); swapping providers/models is a
+  config change, never a code change.
 - **`src/presentation`** — components and hooks (`useJourney`,
   `useMemories`). Components/hooks must go through use cases via
   `getContainer()`, never touch infrastructure or repositories

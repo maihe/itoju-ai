@@ -3,7 +3,7 @@ import type {
 } from "@/domain/entities/JourneyEvent";
 import type { ChatMessage } from "@/domain/entities/ChatMessage";
 import type { LifeJourney } from "@/domain/entities/LifeJourney";
-import type { AIService } from "@/domain/ports/AIService";
+import type { AIService, CompanionContext } from "@/domain/ports/AIService";
 import type { JourneyRepository } from "@/domain/ports/JourneyRepository";
 import { AppendEventUseCase } from "./AppendEventUseCase";
 import type { ContextEngine } from "./ContextEngine";
@@ -42,12 +42,29 @@ export class SendChatMessageUseCase {
     let updated = await this.append.execute(journey, userEvent);
 
     const context = await this.contextEngine.build(updated);
-    const reply = await this.ai.generateResponse(context);
+    const reply = await this.generateReplySafely(context);
 
     const companionEvent = this.buildChatEvent(reply);
     updated = await this.append.execute(updated, companionEvent);
 
     return updated;
+  }
+
+  /**
+   * Chamadas de rede reais falham de formas que o protótipo local nunca
+   * falhava (timeout, indisponibilidade, chave ausente). Uma falha aqui
+   * nunca deve travar a conversa nem gerar culpa — vira uma resposta
+   * honesta do próprio Companion (CONSTITUTION #1).
+   */
+  private async generateReplySafely(context: CompanionContext): Promise<ChatMessage> {
+    try {
+      return await this.ai.generateResponse(context);
+    } catch {
+      return {
+        role: "companion",
+        content: "Não consegui pensar em uma resposta agora. Pode tentar de novo em alguns instantes?",
+      };
+    }
   }
 
   private buildChatEvent(message: ChatMessage): ChatMessageEvent {

@@ -87,3 +87,47 @@ autenticação são incluídos na Fase 1. O `AIService` é um stub
 **Consequência.** Uso imediato, sem contas nem chaves. As integrações
 reais entram em fases posteriores como implementações das portas já
 existentes.
+
+---
+
+## ADR-006 — IA real via OpenRouter, atrás de uma fronteira de servidor
+
+**Contexto.** O ADR-005 postergou LLM real, backend e autenticação
+para depois da Fase 1, para validar a hipótese de valor descrita em
+`VISION.md` o mais rápido possível com um stub. Essa hipótese já foi
+testada até o limite possível com um motor de regras fixas —
+`COGNITIVE_ARCHITECTURE.md` documenta a limitação estrutural (nenhuma
+das quatro estratégias hoje termina sem alguma pergunta).
+`PRODUCT_STRATEGY.md` já prioriza IA real como item #1, e o próprio
+propósito do produto — cuidar do corpo e dos projetos da mente,
+reduzir atrito no que é imprescindível manter, ajudar a decidir e
+agir (ver `VISION.md`) — depende de uma conversa que responda de
+verdade ao que a pessoa diz, não de respostas fixas por
+palavra-chave. Adicionalmente, decidimos não acoplar o produto a um
+único fornecedor de IA.
+
+**Decisão.** `AIService` (porta de domínio, inalterada — ADR-003)
+ganha uma implementação real, `OpenRouterCompanionAIService`, que
+fala com o OpenRouter (API compatível com OpenAI) em vez do SDK de
+um provedor específico. A chamada roda inteiramente atrás de uma
+server function do TanStack Start — a chave de API nunca chega ao
+cliente. A escolha de modelo é uma `ModelConfiguration` lida de
+variáveis de ambiente do servidor, nunca hardcoded nem exposta ao
+bundle do cliente. A etapa de perceber estado da pessoa e escolher
+intervenção permanece encapsulada no prompt (ver
+`COGNITIVE_ARCHITECTURE.md`, seção 8) — não é um componente novo de
+código, é comportamento descrito em linguagem dentro da mesma
+chamada.
+
+**Consequência.** `domain/` e `application/` permanecem sem qualquer
+conhecimento de Anthropic, OpenAI, Gemini ou OpenRouter. Trocar de
+modelo — inclusive de fornecedor — passa a ser mudança de
+configuração, não de código. Não introduzimos um backend novo — a
+mudança usa o servidor SSR que a TanStack Start já provisiona
+(Nitro), só adicionando uma rota autenticada por variável de
+ambiente. Este ADR qualifica o ADR-005 — que permanece registrado
+como estava, sem edição — apenas nas cláusulas "sem LLM real" e "sem
+backend"; ADR-003 (`CompanionContext`) e ADR-004 (persistência local)
+seguem válidos sem alteração. Uma interface formal de "provider" não
+é introduzida agora — só se justificaria diante de um segundo
+mecanismo de chamada concreto, que ainda não existe.

@@ -61,9 +61,17 @@ contexto de uma vida inteira".
 
 Outra diferença é de **constituição** (`CONSTITUTION.md`): um chatbot
 não tem princípios inegociáveis embutidos no comportamento. O
-Companion tem seis, e eles são visíveis no código, não só na
+Companion tem sete, e eles são visíveis no código, não só na
 intenção — por exemplo, a `AchievementStrategy` existe porque
 "celebrar conquistas" é princípio #5, não um nice-to-have de UX.
+
+A diferença mais decisiva, porém, é onde cada um compete. Um chatbot
+compete por responder bem à mensagem atual — inclusive "lembrando"
+coisas como prova de sofisticação. O Companion não compete por
+lembrar mais informações; compete por reduzir melhor a carga
+cognitiva da pessoa ao longo da jornada (ver `PRODUCT_STRATEGY.md`,
+"Onde competimos", e `CONSTITUTION.md` #7). Memória, contexto e
+continuidade só importam na medida em que servem a isso.
 
 ## 3. Como ele decide o que lembrar?
 
@@ -92,6 +100,14 @@ originou, para que a sugestão seja auditável e explicável — nunca uma
 inferência opaca. Isso é o mesmo princípio de `CONSTITUTION.md` #3
 ("sempre explicar recomendações") aplicado à memória: o Companion
 nunca lembra de algo que não possa justificar de onde veio.
+
+Importante: criar uma memória e **recuperá-la** são decisões
+diferentes. Uma memória confirmada não é automaticamente injetada em
+todo `CompanionContext` futuro — ela só é recuperada quando muda a
+qualidade da resposta atual. Fora isso, permanece invisível (ver
+`MEMORY_MODEL.md`). O Companion nunca recupera uma memória apenas para
+demonstrar que lembra — isso seria otimizar para o diferencial errado
+(ver `PRODUCT_STRATEGY.md`, "Onde competimos").
 
 ## 4. Como ele decide o que esquecer?
 
@@ -205,18 +221,52 @@ sessão atual:
   linha do tempo de momentos que importam, não um log plano de
   conversas (isso alimenta a Fase 6 — Dashboard).
 - **Visão (Fases 2–3):** memórias confirmadas e retomada consciente
-  entre sessões ("da última vez você disse...") são os dois
-  mecanismos que fecham o ciclo — a jornada guarda o que aconteceu, a
-  memória guarda o que importa lembrar sobre a pessoa, e a
-  continuidade ativa é o Companion usar essas duas coisas para
-  recomeçar cada conversa já sabendo onde a pessoa parou, em vez de
-  perguntar de novo o que ela já disse.
+  entre sessões são os dois mecanismos que fecham o ciclo — a jornada
+  guarda o que aconteceu, a memória guarda o que importa lembrar sobre
+  a pessoa, e a continuidade ativa é o Companion usar essas duas
+  coisas para recomeçar cada conversa já sabendo onde a pessoa parou,
+  em vez de perguntar de novo o que ela já disse. O objetivo dessa
+  retomada nunca é demonstrar que o sistema lembra — é ser invisível:
+  quando o contexto ainda está presente na memória de trabalho da
+  pessoa, o Companion deve simplesmente continuar a conversa, sem
+  citar o que já foi dito só para provar que guardou.
 
 Continuidade, portanto, não é um recurso de UI (como "histórico de
 chat visível") — é uma propriedade estrutural do domínio: a jornada
 existe independentemente da UI que a renderiza, e cada novo tipo de
 evento que a Fase N adicionar entra nessa mesma continuidade sem
 precisar recriar o conceito.
+
+## 8. Como ele escolhe qual intervenção usar?
+
+Antes de gerar qualquer texto, o Companion precisa (ainda que
+implicitamente) perceber o que se passou na conversa, decidir qual
+seria um estado mais desejável para a pessoa ao final da interação, e
+escolher que tipo de intervenção — perguntar, validar, sintetizar,
+apenas acompanhar — tem mais chance de produzir essa mudança. A
+resposta em linguagem natural é a execução dessa escolha, não a
+escolha em si.
+
+**Hoje:** essa etapa permanece encapsulada no prompt. Nenhuma
+implementação de `AIService` — nem o protótipo por regras, nem uma
+LLM real — expõe "perceber estado" e "escolher intervenção" como
+passos separados e observáveis de fora. Tudo acontece dentro da
+mesma chamada, guiado por instrução em linguagem, não por um
+componente de código à parte.
+
+A decisão de mantê-la implícita foi tomada por simplicidade: não há
+hoje evidência de que uma única chamada, bem instruída, seja
+insuficiente para perceber estado e escolher intervenção ao mesmo
+tempo em que redige a resposta. Adicionar um passo separado agora —
+sem esse problema concreto — seria antecipar engenharia.
+
+**No futuro:** o Companion poderá tornar explícita a etapa de escolha
+de intervenção, separando-a da geração de linguagem. Essa mudança
+será reavaliada caso o comportamento da LLM se mostre insuficiente —
+por exemplo, se ela escrever prosa correta mas escolher repetidamente
+o tipo errado de intervenção (perguntar quando deveria só validar,
+listar quando deveria sintetizar). Até esse sinal aparecer, a etapa
+continua implícita.
 
 ---
 
@@ -230,6 +280,8 @@ precisar recriar o conceito.
 | O que esquecer | `MEMORY_MODEL.md` | `Memory.ts` (`MemoryStatus`), `MemoryRepository.ts` |
 | Quando perguntar / ouvir | `CONSTITUTION.md` | `ResponseStrategy.ts` e `strategies/*` |
 | Conversas → continuidade | `ARCHITECTURE_DECISIONS.md` (ADR-002), `ROADMAP.md` | `ContextEngine.ts`, `SendChatMessageUseCase.ts` |
+| Onde o Companion compete | `PRODUCT_STRATEGY.md` ("Onde competimos"), `CONSTITUTION.md` (#7) | `ContextEngine.ts` (filtragem futura de relevância) |
+| Como escolhe a intervenção | `CONSTITUTION.md` (#7) | `AIService.ts` (contrato comportamental do prompt) |
 
 Este documento deve ser atualizado sempre que uma fase do `ROADMAP.md`
 mudar o comportamento cognitivo real do Companion — a distinção
