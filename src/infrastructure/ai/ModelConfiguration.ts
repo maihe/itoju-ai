@@ -22,7 +22,13 @@ export function loadModelConfiguration(): ModelConfiguration {
     provider: process.env.AI_PROVIDER ?? "openrouter",
     model: process.env.AI_MODEL ?? "anthropic/claude-sonnet-5",
     temperature: Number(process.env.AI_TEMPERATURE ?? 0.7),
-    maxTokens: Number(process.env.AI_MAX_TOKENS ?? 400),
-    timeoutMs: Number(process.env.AI_TIMEOUT_MS ?? 15000),
+    // Claude Sonnet 5 roda com raciocínio adaptativo ligado por padrão, e
+    // max_tokens é o teto combinado de raciocínio + resposta visível, não
+    // só da resposta. Um teto baixo demais (ex.: 400) faz o modelo gastar
+    // tudo "pensando" em mensagens longas/complexas e devolver texto vazio
+    // — não é um jeito válido de forçar economia de palavras (isso é
+    // trabalho do system prompt, ver CONSTITUTION.md #7).
+    maxTokens: Number(process.env.AI_MAX_TOKENS ?? 2000),
+    timeoutMs: Number(process.env.AI_TIMEOUT_MS ?? 20000),
   };
 }
