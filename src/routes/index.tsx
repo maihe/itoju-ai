@@ -1,4 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Composer } from "@/presentation/components/Composer";
 import { CompanionNav } from "@/presentation/components/CompanionNav";
 import { JourneyView } from "@/presentation/components/JourneyView";
@@ -22,13 +33,31 @@ function CompanionPage() {
         </div>
         <div className="flex items-center gap-2">
           <CompanionNav />
-          <button
-            type="button"
-            onClick={() => void clearJourney()}
-            className="rounded-lg border border-input px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-accent"
-          >
-            Nova jornada
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                type="button"
+                className="rounded-lg border border-input px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-accent"
+              >
+                Nova jornada
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Começar uma nova jornada?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Isso apaga toda a jornada atual — não é possível desfazer nem
+                  recuperar depois.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={() => void clearJourney()}>
+                  Apagar e começar de novo
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </header>
 
