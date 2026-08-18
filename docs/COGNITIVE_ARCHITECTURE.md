@@ -111,10 +111,20 @@ demonstrar que lembra — isso seria otimizar para o diferencial errado
 
 ## 4. Como ele decide o que esquecer?
 
-"Esquecer" no Companion nunca significa apagar. `LifeJourney` é um
-log de eventos apend-only — mesmo `ClearJourneyUseCase` não apaga a
-jornada anterior tecnicamente, ele encerra e persiste uma nova vazia
-(a mesma lógica de preservação histórica está prevista para memória).
+**Visão:** "esquecer" no Companion não deveria significar apagar —
+`LifeJourney` é pensado como um log de eventos append-only, e o mesmo
+princípio de preservação histórica previsto para memória (arquivar,
+não apagar) deveria valer para a jornada inteira.
+
+**Hoje isso não é verdade para `ClearJourneyUseCase`.** "Nova jornada"
+chama `localStorage.removeItem` sobre a única chave de armazenamento
+existente — é apagamento real e permanente, sem arquivamento, sem
+histórico de jornadas anteriores. Não há como recuperar depois de
+confirmar. Isso é uma contradição real com o princípio de continuidade
+do produto, registrada aqui em vez de escondida — a mitigação atual é
+só uma confirmação explícita antes de apagar (ver `routes/index.tsx`);
+preservar de verdade (arquivar em vez de apagar) é trabalho futuro,
+ainda não feito.
 
 **Visão (`MEMORY_MODEL.md`):** uma memória pode ter quatro estados —
 `suggested`, `confirmed`, `rejected`, `archived`. "Esquecer" tem dois
