@@ -59,7 +59,8 @@ export class SendChatMessageUseCase {
   private async generateReplySafely(context: CompanionContext): Promise<ChatMessage> {
     try {
       return await this.ai.generateResponse(context);
-    } catch {
+    } catch (error) {
+      console.error("Falha ao gerar resposta da IA:", error);
       return {
         role: "companion",
         content: "Não consegui pensar em uma resposta agora. Pode tentar de novo em alguns instantes?",
